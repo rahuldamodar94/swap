@@ -1,5 +1,5 @@
 const { ethers } = require('ethers')
-const { NftSwap } = require('@traderxyz/nft-swap-sdk')
+const { NftSwapV4 } = require('@traderxyz/nft-swap-sdk')
 const config = require('./config')
 
 // Sets the ethers provider using the Polygon RPC.
@@ -15,8 +15,9 @@ const makerSign = new ethers.Wallet(config.MAKER_PVT_KEY, provider)
 const takerSign = new ethers.Wallet(config.TAKER_PVT_KEY, provider)
 
 // Creates NFT sdk objects for both the buyer and seller( maker and taker)
-const nftSwapSdk_maker = new NftSwap(provider, makerSign, 137)
-const nftSwapSdk_taker = new NftSwap(provider, takerSign, 137)
+
+const nftSwapSdk_maker = new NftSwapV4(provider, makerSign, 137)
+const nftSwapSdk_taker = new NftSwapV4(provider, takerSign, 137)
 
 async function script() {
     // Creates the Seller/Makers Asset Data - This represents the NFT
@@ -25,13 +26,13 @@ async function script() {
     const TEST_NFT = {
         tokenAddress: config.NFT_CONTRACT,
         // For now, the seller holds NFT with Id - 10,20,30 Only
-        tokenId: '10',
+        tokenId: '20',
         type: 'ERC721',
     }
 
     // Seller/Maker Address - Can be replaced with any other address which has NFT
-    const walletAddressUserA = '0xDDdAb2483562e88425d1b14D56766B6d25110FD9'
-    const assetsToSwapUserA = [TEST_NFT]
+    const walletAddressUserA = '0xBE10750c194408Fb3cB62FAA6F5D8a07E365037D'
+    const assetsToSwapUserA = TEST_NFT
 
     // Creates the Buyer/Taker Asset Data - This represents the ERC20 Token
     // ERC20 contract address needs to be set in the .env
@@ -43,13 +44,13 @@ async function script() {
     }
 
     // Buyer/Taker Address - Can be replaced with any other address which has ERC20 Token
-    const walletAddressUserB = '0xBE10750c194408Fb3cB62FAA6F5D8a07E365037D'
-    const assetsToSwapUserB = [ONE_USDT]
+    const walletAddressUserB = '0xDDdAb2483562e88425d1b14D56766B6d25110FD9'
+    const assetsToSwapUserB = ONE_USDT
 
     // Ox contracts needs to be given approval before they act as a mediator for the swap
     // Before granting approval, we check the approval status.
     const approvalStatusForUserA = await nftSwapSdk_maker.loadApprovalStatus(
-        assetsToSwapUserA[0],
+        assetsToSwapUserA,
         walletAddressUserA
     )
 
@@ -58,7 +59,7 @@ async function script() {
     if (!approvalStatusForUserA.contractApproved) {
         console.log('maker approving !!')
         const approvalTx = await nftSwapSdk_maker.approveTokenOrNftByAsset(
-            assetsToSwapUserA[0],
+            assetsToSwapUserA,
             walletAddressUserA,
             {
                 // These fees can be obtained from the Polygon gas station API - https://gasstation-mainnet.matic.network/v2
@@ -70,7 +71,7 @@ async function script() {
         // Once the approval tx is confirmed on the blockchain, the receipt is obtained.
         const approvalTxReceipt = await approvalTx.wait()
         console.log(
-            `Approved ${assetsToSwapUserA[0].tokenAddress} contract to swap with 0x (txHash: ${approvalTxReceipt.transactionHash})`
+            `Approved ${assetsToSwapUserA.tokenAddress} contract to swap with 0x (txHash: ${approvalTxReceipt.transactionHash})`
         )
     } else {
         // If already approved, we can proceed with order signing. Approval is always a one time process for the user
@@ -103,7 +104,7 @@ async function script() {
         // Buyer also needs to approve the 0x protocol to swap his ERC20 tokens on his behalf
         const approvalStatusForUserB =
             await nftSwapSdk_taker.loadApprovalStatus(
-                assetsToSwapUserB[0],
+                assetsToSwapUserB,
                 walletAddressUserB
             )
 
@@ -112,7 +113,7 @@ async function script() {
         if (!approvalStatusForUserB.contractApproved) {
             console.log('taker approving !!!!')
             const approvalTx = await nftSwapSdk_taker.approveTokenOrNftByAsset(
-                assetsToSwapUserB[0],
+                assetsToSwapUserB,
                 walletAddressUserB,
                 {
                     // These fees can be obtained from the Polygon gas station API - https://gasstation-mainnet.matic.network/v2
@@ -124,7 +125,7 @@ async function script() {
             // Once the approval tx is confirmed on the blockchain, the receipt is obtained
             const approvalTxReceipt = await approvalTx.wait()
             console.log(
-                `Approved ${assetsToSwapUserB[0].tokenAddress} contract to swap with 0x. TxHash: ${approvalTxReceipt.transactionHash})`
+                `Approved ${assetsToSwapUserB.tokenAddress} contract to swap with 0x. TxHash: ${approvalTxReceipt.transactionHash})`
             )
         } else {
             // If already approved, we can proceed with order filling/swap execution. Approval is always a one time process for the buyer too
