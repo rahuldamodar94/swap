@@ -10,7 +10,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@traderxyz/nft-swap-sdk": "^0.15.2",
+    "@traderxyz/nft-swap-sdk": "^0.23.0",
     "dotenv": "^16.0.0",
     "ethers": "^5.6.0"
   }
