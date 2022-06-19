@@ -26,12 +26,12 @@ async function script() {
     const TEST_NFT = {
         tokenAddress: config.NFT_CONTRACT,
         // For now, the seller holds NFT with Id - 10,20,30 Only
-        tokenId: '20',
+        tokenId: '10',
         type: 'ERC721',
     }
-
+    
     // Seller/Maker Address - Can be replaced with any other address which has NFT
-    const walletAddressUserA = '0xBE10750c194408Fb3cB62FAA6F5D8a07E365037D'
+    const walletAddressUserA = '0xDDdAb2483562e88425d1b14D56766B6d25110FD9'
     const assetsToSwapUserA = TEST_NFT
 
     // Creates the Buyer/Taker Asset Data - This represents the ERC20 Token
@@ -44,7 +44,7 @@ async function script() {
     }
 
     // Buyer/Taker Address - Can be replaced with any other address which has ERC20 Token
-    const walletAddressUserB = '0xDDdAb2483562e88425d1b14D56766B6d25110FD9'
+    const walletAddressUserB = '0xBE10750c194408Fb3cB62FAA6F5D8a07E365037D'
     const assetsToSwapUserB = ONE_USDT
 
     // Ox contracts needs to be given approval before they act as a mediator for the swap
@@ -82,7 +82,19 @@ async function script() {
         const order = nftSwapSdk_maker.buildOrder(
             assetsToSwapUserA,
             assetsToSwapUserB,
-            walletAddressUserA
+            walletAddressUserA,
+            {
+                fees: [
+                  {
+                    amount: '20000', 
+                    recipient: '0x05158d7a59FA8AC5007B3C8BabAa216568Fd32B3', 
+                  },
+                  {
+                    amount: '20000', 
+                    recipient: '0xFd71Dc9721d9ddCF0480A582927c3dCd42f3064C', 
+                  },
+                ],
+              }
         )
 
         // Try uncommenting below to understand order object schema
