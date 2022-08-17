@@ -26,7 +26,7 @@ async function script() {
     const TEST_NFT = {
         tokenAddress: config.NFT_CONTRACT,
         // For now, the seller holds NFT with Id - 10,20,30 Only
-        tokenId: '10',
+        tokenId: '378869',
         type: 'ERC721',
     }
     
@@ -37,9 +37,9 @@ async function script() {
     // Creates the Buyer/Taker Asset Data - This represents the ERC20 Token
     // ERC20 contract address needs to be set in the .env
     const ONE_USDT = {
-        tokenAddress: config.ERC20_CONTRACT,
+        tokenAddress: "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         // Amount is the amount of ERC20 to be swapped. It includes all decimals - 6 in the case of USDT
-        amount: '1000000',
+        amount: '100000000000000000',
         type: 'ERC20',
     }
 
@@ -86,11 +86,11 @@ async function script() {
             {
                 fees: [
                   {
-                    amount: '20000', 
+                    amount: '100000000000000000', 
                     recipient: '0x05158d7a59FA8AC5007B3C8BabAa216568Fd32B3', 
                   },
                   {
-                    amount: '20000', 
+                    amount: '100000000000000000', 
                     recipient: '0xFd71Dc9721d9ddCF0480A582927c3dCd42f3064C', 
                   },
                 ],
